@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Screening Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+        textarea, input[type="file"], input[type="submit"] {
+            width: 100%;
+            max-width: 600px; /* Set a maximum width for better appearance */
+            box-sizing: border-box;
+            margin: 10px 0;
+        }
+        textarea {
+            height: 200px; /* Increase height for better readability */
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        input[type="file"] {
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .form-section {
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        .result {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px; /* Set a maximum width for consistency */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Resume Screening Tool</h1>
+
+    <!-- Upload Resume Section -->
+    <div class="form-section">
+        <h2>Upload Resume</h2>
+        <form action="/upload_resume" method="post" enctype="multipart/form-data">
+            <input type="file" name="resume_file" accept=".pdf,.doc,.docx,.txt"><br>
+            <input type="submit" value="Upload and Parse Resume">
+        </form>
+        {% if result_type == 'Resume' %}
+        <div class="result">
+            <h3>Resume Parsing Results</h3>
+            <ul>
+                {% for key, value in result.items() %}
+                    <li><strong>{{ key }}:</strong> {{ value }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Parse Job Description Section -->
+    <div class="form-section">
+        <h2>Parse Job Description</h2>
+        <form action="/parse_job_description" method="post">
+            <textarea name="job_description_text" placeholder="Enter job description text here..."></textarea><br>
+            <input type="submit" value="Parse Job Description">
+        </form>
+        {% if result_type == 'Job Description' %}
+        <div class="result">
+            <h3>Job Description Parsing Results</h3>
+            <ul>
+                {% for key, value in result.items() %}
+                    <li><strong>{{ key }}:</strong> {{ value }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Rank Candidates Section -->
+    <div class="form-section">
+        <h2>Rank Candidates</h2>
+        <form action="/rank_candidates" method="post">
+            <textarea name="resumes" placeholder="Enter resumes, one per line..."></textarea><br>
+            <textarea name="job_description" placeholder="Enter job description here..."></textarea><br>
+            <input type="submit" value="Rank Candidates">
+        </form>
+        {% if ranking %}
+        <div class="result">
+            <h3>Candidate Ranking Results</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Resume</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in ranking %}
+                    <tr>
+                        <td>{{ entry['resume'] }}</td>
+                        <td>{{ entry['score'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
